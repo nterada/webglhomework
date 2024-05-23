@@ -107,14 +107,14 @@ class ThreeApp {
 
     const boxCountX = 9;
     const boxCountZ = 9;
-    const spacer = 0.5;
+    const spacer = 0.51;
     const offsetX = boxCountX * spacer / 2;
     const offsetZ = boxCountZ * spacer / 2;
 
     this.boxGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
     this.boxArray = [];
 
-    loader.load('tex.jpg', (texture2) => {
+    loader.load('mokume.png', (texture2) => {
       this.material = new THREE.MeshLambertMaterial({ map: texture2 });
 
       for (let i = 0; i < boxCountX; i++) {
@@ -142,8 +142,8 @@ class ThreeApp {
       for (let i = 0; i < numberOfClones; i++) {
         const ho = new THREE.Mesh(this.boxGeometry, texho);
 
-        ho.position.x = (Math.random() - 0.5) * 9 * spacer;
-        ho.position.z = (Math.random() - 0.5) * 9 * spacer;
+        ho.position.x = (Math.random() - 0.5) * 8 * spacer;
+        ho.position.z = (Math.random() - 0.5) * 8 * spacer;
         ho.position.y = -2.75;
         ho.scale.y = 0.1;
 
@@ -169,22 +169,84 @@ class ThreeApp {
       this.boxGeometry2 = new THREE.BoxGeometry(0.5, 0.5, 0.5);
       const oyt1 = new THREE.Mesh(this.boxGeometry2, texoyt1);
 
-      this.scene.add(oyt1);
+      // this.scene.add(oyt1);
 
-      const torusCount = 7;
+      const torusCount = 8;
       const transformScale = 6.0;
       this.oyt1Array = [];
       for (let i = 0; i < torusCount; ++i) {
         const newOyt1 = new THREE.Mesh(this.boxGeometry2, texoyt1);
         newOyt1.position.x = (Math.random() * 2.0 - 1.0) * transformScale;
-        newOyt1.position.y = (Math.random() * 2.0 - 1.0) * transformScale;
+        newOyt1.position.y = (Math.random() * 2.0) * transformScale;
         newOyt1.position.z = (Math.random() * 2.0 - 1.0) * transformScale;
-        newOyt1.scale.set(2, 2, 2);
+        newOyt1.scale.set(1, 1, 1);
         this.scene.add(newOyt1);
         this.oyt1Array.push(newOyt1);
       }
     });
+
+    loader.load('oyt3.png', (texture8) => {
+      const texoyt2 = new THREE.MeshBasicMaterial({ map: texture8 });
+      this.boxGeometry2 = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+      const oyt1 = new THREE.Mesh(this.boxGeometry2, texoyt2);
+
+
+      const torusCount = 8;
+      const transformScale = 6.0;
+      this.oyt2Array = [];
+      for (let i = 0; i < torusCount; ++i) {
+        const newOyt3 = new THREE.Mesh(this.boxGeometry2, texoyt2);
+        newOyt3.position.x = (Math.random() * 2.0 - 1.0) * transformScale;
+        newOyt3.position.y = (Math.random() * 2.0) * transformScale;
+        newOyt3.position.z = (Math.random() * 2.0 - 1.0) * transformScale;
+        newOyt3.scale.set(2, 2, 2);
+        this.scene.add(newOyt3);
+        this.oyt2Array.push(newOyt3);
+      }
+    });
+
+    loader.load('oyt5.png', (texture9) => {
+      const texoyt3 = new THREE.MeshBasicMaterial({ map: texture9 });
+      this.boxGeometry2 = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+      const oyt3 = new THREE.Mesh(this.boxGeometry2, texoyt3);
+
+
+      const torusCount = 1;
+      const transformScale = 6.0;
+      this.oyt3Array = [];
+      for (let i = 0; i < torusCount; ++i) {
+        const newOyt3 = new THREE.Mesh(this.boxGeometry2, texoyt3);
+        newOyt3.position.x = (Math.random() * 2.0 - 1.0) * transformScale;
+        newOyt3.position.y = (Math.random() * 2.0) * transformScale;
+        newOyt3.position.z = (Math.random() * 2.0 - 1.0) * transformScale;
+        newOyt3.scale.set(1, 1, 1);
+        this.scene.add(newOyt3);
+        this.oyt3Array.push(newOyt3);
+      }
+    });
+
+    // loader.load('oyt4.png', (texture10) => {
+    //   const texoyt4 = new THREE.MeshBasicMaterial({ map: texture10 });
+    //   this.boxGeometry2 = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+    //   // const newOyt4 = new THREE.Mesh(this.boxGeometry2, texoyt4);
+  
+  
+    //   const torusCount = 3;
+    //   const transformScale = 6.0;
+    //   this.oyt4Array = [];
+    //   for (let i = 0; i < torusCount; ++i) {
+    //     const newOyt4 = new THREE.Mesh(this.boxGeometry2, texoyt4);
+    //     newOyt4.position.x = (Math.random() * 2.0 - 1.0) * transformScale;
+    //     newOyt4.position.y = (Math.random() * 2.0) * transformScale;
+    //     newOyt4.position.z = (Math.random() * 2.0 - 1.0) * transformScale;
+    //     newOyt4.scale.set(2, 2, 2);
+    //     this.scene.add(newOyt4);
+    //     this.oyt4Array.push(newOyt4);
+    //   }
+    // });
   }
+
+
 
   startRendering() {
     if (this.isHiInitialized) {
@@ -202,6 +264,9 @@ class ThreeApp {
     if (this.isDown) {
       this.oyt1Array.forEach((oyt1) => {
         oyt1.rotation.y += 0.05;
+      });
+      this.oyt2Array.forEach((oyt2) => {
+        oyt2.rotation.y += 0.05;
       });
       if (this.hi) {
         this.hi.position.z -= 0.01;
