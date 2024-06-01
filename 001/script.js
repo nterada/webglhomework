@@ -136,7 +136,7 @@ class ThreeApp {
       propellerGroup.position.x = radius * Math.cos(angle);
       propellerGroup.position.y = radius * Math.sin(angle);
 
-      propellerGroup.position.z = .7;
+      propellerGroup.position.z = .75;
 
       this.wing.add(propellerGroup);
     }
@@ -146,7 +146,7 @@ class ThreeApp {
       new THREE.MeshBasicMaterial({ color: 0xdddddd })
     );
     propellerneck.rotation.x = 0.5*Math.PI;
-    propellerneck.position.z = .7;
+    propellerneck.position.z = .75;
 
     this.wing.add(propellerneck);
 
@@ -171,36 +171,6 @@ class ThreeApp {
 
     this.wing.add(propellerneck3);
 
-    // const radius = 1.2;
-    // const propellerLength = 4;
-    // const boxSizeX = 2;
-    // const boxSizeY = 0.8;
-    // const boxSizeZ = 0.01;
-    // const numBoxes = 1; // 一つのプロペラを構成するボックスの数
-
-    // こっちをプロペラにしてもいいかも
-    // const numLines = 4; // プロペラの数
-
-    // for (let i = 0; i < numLines; i++) {
-    //   const angle = (i / numLines) * 2 * Math.PI;
-
-    //   // プロペラグループの作成
-    //   const coverLineGroup = new THREE.Group();
-    //   const coverline  = new THREE.Mesh(
-    //     new THREE.TorusGeometry( 1, .1, 2, 100 ),
-    //     new THREE.MeshBasicMaterial({ color: 0x0000ff })
-    //   );
-
-    //   coverLineGroup.add(coverline);
-
-    //   // プロペラグループの配置
-    //   coverLineGroup.rotation.z = angle;
-    //   coverLineGroup.position.x = radius * Math.cos(angle);
-    //   coverLineGroup.position.y = radius * Math.sin(angle);
-
-    //   this.wing.add(coverLineGroup);
-    // }
-
 
     const numLines = 70; // プロペラの数
 
@@ -211,7 +181,7 @@ class ThreeApp {
       const coverLineGroup = new THREE.Group();
       const coverline  = new THREE.Mesh(
         // new THREE.CylinderGeometry( 0.001, .02, 4, 32 ),
-        new THREE.TorusGeometry(2.0, 0.01, 12, 48),
+        new THREE.TorusGeometry(1.9, 0.01, 12, 48),
         new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
       );
       coverline.rotation.x = 0.5*Math.PI;
@@ -231,7 +201,7 @@ class ThreeApp {
 
     const cover = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
-      new THREE.TorusGeometry( 2, .05, 16, 100 ),
+      new THREE.TorusGeometry( 1.9, .05, 16, 20 ),
       new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
     );
 
@@ -249,40 +219,6 @@ class ThreeApp {
     covercenter.position.z = 1.4;
     this.neck.add(covercenter);
 
-    // const dotradius = 2.5; // 円の半径
-    // const dotSize = 0.2; // ドット（円）のサイズ
-    // const numDots = 30; // 円周上のドットの数
-
-    // for (let i = 0; i < numDots; i++) {
-    //   const angle = (i / numDots) * Math.PI * 2;
-      
-    //   const dot = new THREE.Mesh(
-    //     new THREE.BoxGeometry(dotSize, dotSize, dotSize),
-    //     new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
-    //   );
-
-    //   dot.position.x = dotradius * Math.cos(angle);
-    //   dot.position.y = dotradius * Math.sin(angle);
-
-    //   // this.scene.add(dot); // シーンに追加
-    //   this.neck.add(dot);
-    // }
-
-    // const dotSize2 = 0.2; // ドット（正方形）のサイズ
-    // const numHeight = 20; // 高さ方向に配置するドットの数
-
-    // for (let i = 0; i < numHeight; i++) {
-    //   const height = new THREE.Mesh(
-    //     new THREE.BoxGeometry(dotSize2, dotSize2, dotSize2),
-    //     new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
-    //   );
-
-    //   // height.position.z = i * dotSize2 * 2; // ドット同士の間隔を考慮して高さを設定
-    //   height.position.y = i * dotSize2 * -2; // ドット同士の間隔を考慮して高さを設定
-    //   height.position.z = -0.5;
-
-    //   this.neck.add(height); // ラインのようにドットを追加
-    // }
 
     const pool = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
