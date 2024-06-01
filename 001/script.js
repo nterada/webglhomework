@@ -116,15 +116,21 @@ class ThreeApp {
       const propellerGroup = new THREE.Group();
       const box = new THREE.Mesh(
         // new THREE.BoxGeometry(boxSizeX, boxSizeY, boxSizeZ),
-        new THREE.TorusGeometry( 0.21, 0.22, 2, 50 ),
-        new THREE.MeshBasicMaterial({ color: 0xdddddd })
+        // new THREE.TorusGeometry( 0.21, 0.22, 2, 50 ),
+        // new THREE.TorusGeometry( 0.2, 0.22, 2, 100 ),
+        new THREE.CylinderGeometry( .4, .45, 0.01, 32 ),
+        new THREE.MeshPhongMaterial({ color: 0xdddddd })
       );
 
+      box.rotation.x = 0.6*Math.PI;
+
       box.scale.x = 2;
-      box.scale.y = 1.2;
+      // box.scale.y = 1.2;
       box.scale.y = 1.4;
+      box.scale.z = 1.4;
       // box.
-      box.rotation.x = .3;
+      // box.rotation.x = .3;
+  
 
       // const boxAngle = 1 * Math.PI;
       // box.position.x = (propellerLength / 2) * Math.cos(boxAngle);
@@ -143,7 +149,7 @@ class ThreeApp {
 
     const propellerneck = new THREE.Mesh(
       new THREE.CylinderGeometry( .3, .3, .3, 32 ),
-      new THREE.MeshBasicMaterial({ color: 0xdddddd })
+      new THREE.MeshPhongMaterial({ color: 0xdddddd })
     );
     propellerneck.rotation.x = 0.5*Math.PI;
     propellerneck.position.z = .75;
@@ -153,7 +159,7 @@ class ThreeApp {
 
     const propellerneck2 = new THREE.Mesh(
       new THREE.CylinderGeometry( .1, .1, .5, 32 ),
-      new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
     );
     propellerneck2.rotation.x = 0.5*Math.PI;
     // propellerneck2.position.z = -.2;
@@ -164,7 +170,7 @@ class ThreeApp {
     
     const propellerneck3 = new THREE.Mesh(
       new THREE.CylinderGeometry( .5, .5, 1.2, 32 ),
-      new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
     );
     propellerneck3.rotation.x = 0.5*Math.PI;
     propellerneck3.position.z = -.3;
@@ -182,7 +188,7 @@ class ThreeApp {
       const coverline  = new THREE.Mesh(
         // new THREE.CylinderGeometry( 0.001, .02, 4, 32 ),
         new THREE.TorusGeometry(1.9, 0.01, 12, 48),
-        new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
+        new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
       );
       coverline.rotation.x = 0.5*Math.PI;
 
@@ -202,7 +208,7 @@ class ThreeApp {
     const cover = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
       new THREE.TorusGeometry( 1.9, .05, 16, 20 ),
-      new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
     );
 
     cover.position.z = 0.8;
@@ -212,7 +218,7 @@ class ThreeApp {
     const covercenter = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
       new THREE.CylinderGeometry( .5, .5, .1,16 ),
-      new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
     );
 
     covercenter.rotation.x = 0.5*Math.PI;
@@ -223,7 +229,7 @@ class ThreeApp {
     const pool = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
       new THREE.CylinderGeometry( .1, .1, 4, 32 ),  
-      new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
     );
     pool.position.y = -2;
     this.pools.add(pool);
@@ -231,7 +237,7 @@ class ThreeApp {
     const pool2 = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
       new THREE.CylinderGeometry( .13, .23, 3, 32 ),  
-      new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
     );
     pool2.position.y = -3;
     this.pools.add(pool2);
@@ -239,7 +245,7 @@ class ThreeApp {
     const pool3 = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
       new THREE.BoxGeometry( 3, .3, 3),  
-      new THREE.MeshBasicMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
     );
     pool3.position.y = -4.5;
     this.pools.add(pool3);
