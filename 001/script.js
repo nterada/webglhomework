@@ -1,5 +1,9 @@
 import * as THREE from '../lib/three.module.js';
 import { OrbitControls } from '../lib/OrbitControls.js';
+import { EffectComposer } from '../lib/EffectComposer.js';
+import { RenderPass } from '../lib/RenderPass.js';
+import { GlitchPass } from '../lib/GlitchPass.js';
+import { DotScreenPass } from '../lib/DotScreenPass.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   const wrapper = document.querySelector('#webgl');
@@ -18,19 +22,19 @@ class ThreeApp {
   };
 
   static RENDERER_PARAM = {
-    clearColor: 0xffffff,
+    clearColor: 0xffdbed,
     width: window.innerWidth,
     height: window.innerHeight,
   };
 
   static DIRECTIONAL_LIGHT_PARAM = {
-    color: 0xffffff,
+    color: 0xffdbed,
     intensity: 1.0,
     position: new THREE.Vector3(1.0, 1.0, 1.0),
   };
 
   static AMBIENT_LIGHT_PARAM = {
-    color: 0xffffff,
+    color: 0xffdbed,
     intensity: 0.1,
   };
 
@@ -39,10 +43,16 @@ class ThreeApp {
   };
 
   static FOG_PARAM = {
-    color: 0xffffff,
+    color: 0xffdbed,
     near: 1.0,
     far: 15.0
   };
+
+
+  composer;         // エフェクトコンポーザー
+  renderPass;       // レンダーパス
+  glitchPass;       // グリッチパス
+  dotScreenPass;    // ドットスクリーンパス @@@
 
   constructor(wrapper) {
     const color = new THREE.Color(ThreeApp.RENDERER_PARAM.clearColor);
@@ -52,11 +62,11 @@ class ThreeApp {
     wrapper.appendChild(this.renderer.domElement);
 
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.Fog(
-      ThreeApp.FOG_PARAM.color,
-      ThreeApp.FOG_PARAM.near,
-      ThreeApp.FOG_PARAM.far
-    );
+    // this.scene.fog = new THREE.Fog(
+    //   ThreeApp.FOG_PARAM.color,
+    //   ThreeApp.FOG_PARAM.near,
+    //   ThreeApp.FOG_PARAM.far
+    // );
 
     this.camera = new THREE.PerspectiveCamera(
       ThreeApp.CAMERA_PARAM.fovy,
@@ -119,7 +129,7 @@ class ThreeApp {
         // new THREE.TorusGeometry( 0.21, 0.22, 2, 50 ),
         // new THREE.TorusGeometry( 0.2, 0.22, 2, 100 ),
         new THREE.CylinderGeometry( .4, .45, 0.01, 32 ),
-        new THREE.MeshPhongMaterial({ color: 0xdddddd })
+        new THREE.MeshPhongMaterial({ color: 0xffffff })
       );
 
       box.rotation.x = 0.6*Math.PI;
@@ -149,7 +159,7 @@ class ThreeApp {
 
     const propellerneck = new THREE.Mesh(
       new THREE.CylinderGeometry( .3, .3, .3, 32 ),
-      new THREE.MeshPhongMaterial({ color: 0xdddddd })
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
     propellerneck.rotation.x = 0.5*Math.PI;
     propellerneck.position.z = .75;
@@ -159,7 +169,7 @@ class ThreeApp {
 
     const propellerneck2 = new THREE.Mesh(
       new THREE.CylinderGeometry( .1, .1, .5, 32 ),
-      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
     propellerneck2.rotation.x = 0.5*Math.PI;
     // propellerneck2.position.z = -.2;
@@ -170,7 +180,7 @@ class ThreeApp {
     
     const propellerneck3 = new THREE.Mesh(
       new THREE.CylinderGeometry( .5, .5, 1.2, 32 ),
-      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
     propellerneck3.rotation.x = 0.5*Math.PI;
     propellerneck3.position.z = -.3;
@@ -188,7 +198,7 @@ class ThreeApp {
       const coverline  = new THREE.Mesh(
         // new THREE.CylinderGeometry( 0.001, .02, 4, 32 ),
         new THREE.TorusGeometry(1.9, 0.01, 12, 48),
-        new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
+        new THREE.MeshPhongMaterial({ color: 0xffffff })
       );
       coverline.rotation.x = 0.5*Math.PI;
 
@@ -208,7 +218,7 @@ class ThreeApp {
     const cover = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
       new THREE.TorusGeometry( 1.9, .05, 16, 20 ),
-      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
 
     cover.position.z = 0.8;
@@ -218,7 +228,7 @@ class ThreeApp {
     const covercenter = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
       new THREE.CylinderGeometry( .5, .5, .1,16 ),
-      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
 
     covercenter.rotation.x = 0.5*Math.PI;
@@ -229,7 +239,7 @@ class ThreeApp {
     const pool = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
       new THREE.CylinderGeometry( .1, .1, 4, 32 ),  
-      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
     pool.position.y = -2;
     this.pools.add(pool);
@@ -237,7 +247,7 @@ class ThreeApp {
     const pool2 = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
       new THREE.CylinderGeometry( .13, .23, 3, 32 ),  
-      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
     pool2.position.y = -3;
     this.pools.add(pool2);
@@ -245,7 +255,7 @@ class ThreeApp {
     const pool3 = new THREE.Mesh(
       // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
       new THREE.BoxGeometry( 3, .3, 3),  
-      new THREE.MeshPhongMaterial({ color: 0xeeeeee0 })
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
     pool3.position.y = -4.5;
     this.pools.add(pool3);
@@ -255,6 +265,33 @@ class ThreeApp {
     this.scene.add(this.axesHelper);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+
+
+
+
+    // コンポーザーの設定 @@@
+    // 1. コンポーザーにレンダラを渡して初期化する
+    this.composer = new EffectComposer(this.renderer);
+    // 2. コンポーザーに、まず最初に「レンダーパス」を設定する
+    this.renderPass = new RenderPass(this.scene, this.camera);
+    this.composer.addPass(this.renderPass);
+    // 3. コンポーザーに第２のパスとして「グリッチパス」を設定する
+    // this.glitchPass = new GlitchPass();
+    // this.composer.addPass(this.glitchPass);
+    // 4. コンポーザーに第３のパスとして「ドットスクリーンパス」を設定する
+    this.dotScreenPass = new DotScreenPass();
+    this.composer.addPass(this.dotScreenPass);
+    // 5. パスの追加がすべて終わったら画面に描画結果を出すよう指示する
+    this.dotScreenPass.renderToScreen = true;
+
+
+
+
+
+
+
+
+
 
     this.render = this.render.bind(this);
 
@@ -320,6 +357,7 @@ class ThreeApp {
       this.neckRotationDirection = 1;
     }
 
-    this.renderer.render(this.scene, this.camera);
+    // this.renderer.render(this.scene, this.camera);
+    this.composer.render();
   }
 }
