@@ -3,8 +3,6 @@ import { OrbitControls } from '../lib/OrbitControls.js';
 import { EffectComposer } from '../lib/EffectComposer.js';
 import { RenderPass } from '../lib/RenderPass.js';
 import { DotScreenPass } from '../lib/DotScreenPass.js';
-// import { FilmPass } from '../lib/FilmPass.js'; // 追加
-// import { FilmShader } from '../lib/FilmShader.js'; // 追加
 
 window.addEventListener('DOMContentLoaded', () => {
   const wrapper = document.querySelector('#webgl');
@@ -14,11 +12,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 class ThreeApp {
   static CAMERA_PARAM = {
-    // fovy: 60,
-    fovy: 65,
+    fovy: 60,
     aspect: window.innerWidth / window.innerHeight,
     near: 0.1,
-    // far: 20.0,
+    far: 20.0,
     position: new THREE.Vector3(0.0, 2.0, 10.0),
     lookAt: new THREE.Vector3(0.0, 0.0, 0.0),
   };
@@ -58,14 +55,6 @@ class ThreeApp {
     wrapper.appendChild(this.renderer.domElement);
 
     this.scene = new THREE.Scene();
-
-    this.scene.fog = new THREE.Fog(
-      ThreeApp.FOG_PARAM.color,
-      ThreeApp.FOG_PARAM.near,
-      ThreeApp.FOG_PARAM.far
-    );
-
-
     this.camera = new THREE.PerspectiveCamera(
       ThreeApp.CAMERA_PARAM.fovy,
       ThreeApp.CAMERA_PARAM.aspect,
@@ -87,7 +76,6 @@ class ThreeApp {
       ThreeApp.AMBIENT_LIGHT_PARAM.intensity,
     );
     this.scene.add(this.ambientLight);
-    this.scene.fog = new THREE.Fog(0x000000, 50, 2000);
 
     this.material = new THREE.MeshPhongMaterial(ThreeApp.MATERIAL_PARAM);
 
@@ -241,14 +229,6 @@ class ThreeApp {
     dotScreenPass.uniforms['scale'].value = 100; // ドットの大きさを調整
     this.composer.addPass(dotScreenPass);
 
-    // const filmPass = new FilmPass(
-    //   0.35, // ノイズの強さ
-    //   0.025, // スキャンラインの強さ
-    //   648, // スキャンラインの数
-    //   false // グレースケールかどうか
-    // );
-    // this.composer.addPass(filmPass);
-
     this.render = this.render.bind(this);
 
     this.isRotating = false;
@@ -275,54 +255,35 @@ class ThreeApp {
     this.neckRotationDirection = 1;
 
     // Clone and position senpuki groups
-    // this.senpukiClones = [];
-    // for (let i = 0; i < 10; i++) {
-    //   const senpukiClone = this.senpuki.clone();
-    //   senpukiClone.position.x = i * 5; // Adjust spacing as needed
-    //   this.scene.add(senpukiClone);
-    //   this.senpukiClones.push(senpukiClone);
-    // }
-
-
     this.senpukiClones = [];
+    for (let i = 0; i < 4; i++) {
+      const senpukiClone = this.senpuki.clone();
+      senpukiClone.position.x = i * 5; // Adjust spacing as needed
 
-    const numRows = 10;
-    const numCols = 10;
-    const spacing = 20;
-    const gridOffset = (numCols - 1) * spacing / 2;  // グリッド全体の幅の半分
-    
-    // 縦5列、横5列に並べるためのループ
-    for (let i = 0; i < numRows; i++) {  // i が縦のインデックス
-      for (let j = 0; j < numCols; j++) {  // j が横のインデックス
-        const senpukiClone = this.senpuki.clone();
-    
-        // 位置を調整して配置
-        senpukiClone.position.x = (j * spacing) - gridOffset + Math.random() * 2;  // x軸方向にグリッドの中心を基準に配置
-        senpukiClone.position.z = (i * spacing) - gridOffset;  // z軸方向に5単位ずつずらす
-        senpukiClone.scale.x = .1;  // x軸方向にグリッドの中心を基準に配置
-        // senpukiClone.rotation.x = Math.PI.random() * 2;  // x軸方向にグリッドの中心を基準に配置
-        senpukiClone.rotation.x = Math.random() * Math.PI * 2;
-        senpukiClone.rotation.x = Math.random() * Math.PI * 2;
-        senpukiClone.scale.set(
-          Math.random() * 3,  // x軸のスケールを0から2までのランダム値に設定
-          Math.random() * 3,  // y軸のスケールを0から2までのランダム値に設定
-          Math.random() * 3   // z軸のスケールを0から2までのランダム値に設定
-        );
-    
-        this.scene.add(senpukiClone);
-        this.senpukiClones.push(senpukiClone);
-      }
+      // Assign random timing offset and horizontal direction
+      senpukiClone.jumpOffset = Math.random() * Math.PI * 2; // Random offset for jumping
+      senpukiClone.horizontalDirection = Math.random() < 0.5 ? 1 : -1; // Random direction
+
+      this.scene.add(senpukiClone);
+      this.senpukiClones.push(senpukiClone);
     }
-    
 
+    this.clock = new THREE.Clock(); // Clock to keep track of time
   }
 
   easeOutQuad(t) {
     return t * (2 - t);
   }
 
+  // Function to calculate the jump position
+  calculateJumpPosition(time, offset, amplitude, frequency) {
+    return Math.abs(Math.sin((time + offset) * frequency) * amplitude);
+  }
+
   render() {
     requestAnimationFrame(this.render);
+
+    const elapsedTime = this.clock.getElapsedTime(); // Get the elapsed time
 
     this.controls.update();
 
@@ -354,10 +315,14 @@ class ThreeApp {
       this.neckRotationDirection = 1;
     }
 
-    // Update rotation for each senpuki clone
-    this.senpukiClones.forEach(senpukiClone => {
-      senpukiClone.children[0].rotation.z += this.wingRotationSpeed;
-      senpukiClone.children[0].rotation.y += this.neckRotationSpeed * this.neckRotationDirection;
+    const jumpHeight = 0.5; // Adjust the jump height as needed
+    const jumpFrequency = 2; // Adjust the jump frequency as needed
+    const horizontalSpeed = 1; // Adjust the horizontal speed as needed
+
+    // Update position for each senpuki clone
+    this.senpukiClones.forEach((senpukiClone, index) => {
+      senpukiClone.position.x += senpukiClone.horizontalDirection * horizontalSpeed * 0.01; // Move in the random direction
+      senpukiClone.position.y = this.calculateJumpPosition(elapsedTime, senpukiClone.jumpOffset, jumpHeight, jumpFrequency);
     });
 
     // Clear previous frames and render the scene without the effects
