@@ -2,8 +2,9 @@ import * as THREE from '../lib/three.module.js';
 import { OrbitControls } from '../lib/OrbitControls.js';
 import { EffectComposer } from '../lib/EffectComposer.js';
 import { RenderPass } from '../lib/RenderPass.js';
-import { GlitchPass } from '../lib/GlitchPass.js';
 import { DotScreenPass } from '../lib/DotScreenPass.js';
+// import { FilmPass } from '../lib/FilmPass.js'; // 追加
+// import { FilmShader } from '../lib/FilmShader.js'; // 追加
 
 window.addEventListener('DOMContentLoaded', () => {
   const wrapper = document.querySelector('#webgl');
@@ -48,12 +49,6 @@ class ThreeApp {
     far: 15.0
   };
 
-
-  composer;         // エフェクトコンポーザー
-  renderPass;       // レンダーパス
-  glitchPass;       // グリッチパス
-  dotScreenPass;    // ドットスクリーンパス @@@
-
   constructor(wrapper) {
     const color = new THREE.Color(ThreeApp.RENDERER_PARAM.clearColor);
     this.renderer = new THREE.WebGLRenderer();
@@ -62,12 +57,6 @@ class ThreeApp {
     wrapper.appendChild(this.renderer.domElement);
 
     this.scene = new THREE.Scene();
-    // this.scene.fog = new THREE.Fog(
-    //   ThreeApp.FOG_PARAM.color,
-    //   ThreeApp.FOG_PARAM.near,
-    //   ThreeApp.FOG_PARAM.far
-    // );
-
     this.camera = new THREE.PerspectiveCamera(
       ThreeApp.CAMERA_PARAM.fovy,
       ThreeApp.CAMERA_PARAM.aspect,
@@ -92,169 +81,125 @@ class ThreeApp {
 
     this.material = new THREE.MeshPhongMaterial(ThreeApp.MATERIAL_PARAM);
 
+    // Create groups and add them to the scene
     this.senpuki = new THREE.Group();
     this.scene.add(this.senpuki);
-    // this.wing.position.z = 1;
 
     this.pools = new THREE.Group();
     this.scene.add(this.pools);
 
     this.neck = new THREE.Group();
     this.scene.add(this.neck);
-    
+
     this.wing = new THREE.Group();
     this.neck.add(this.wing);
 
     this.senpuki.add(this.neck);
     this.senpuki.add(this.pools);
     this.senpuki.position.y = 1.8;
-    // this.wing.scale.z = 0.1;
-    // this.wing.position.z = 0;
 
     const radius = .8;
     const propellerLength = 4;
     const boxSizeX = 1;
     const boxSizeY = 0.8;
     const boxSizeZ = 0.01;
-    // const numBoxes = 1; // 一つのプロペラを構成するボックスの数
-    const numPropellers = 4; // プロペラの数
+    const numPropellers = 4;
 
     for (let i = 0; i < numPropellers; i++) {
       const angle = (i / numPropellers) * 2 * Math.PI;
-      
-      // プロペラグループの作成
+    
       const propellerGroup = new THREE.Group();
       const box = new THREE.Mesh(
-        // new THREE.BoxGeometry(boxSizeX, boxSizeY, boxSizeZ),
-        // new THREE.TorusGeometry( 0.21, 0.22, 2, 50 ),
-        // new THREE.TorusGeometry( 0.2, 0.22, 2, 100 ),
-        new THREE.CylinderGeometry( .4, .45, 0.01, 32 ),
-        new THREE.MeshPhongMaterial({ color: 0xffffff })
+        new THREE.CylinderGeometry(.4, .45, 0.01, 32),
+        new THREE.MeshPhongMaterial({ 
+          color: 0xffffff,
+          opacity: 0.5, // 透明度の設定
+          transparent: true // 透明を有効にする
+        })
       );
-
-      box.rotation.x = 0.6*Math.PI;
-
-      box.scale.x = 2;
-      // box.scale.y = 1.2;
-      box.scale.y = 1.4;
-      box.scale.z = 1.4;
-      // box.
-      // box.rotation.x = .3;
-  
-
-      // const boxAngle = 1 * Math.PI;
-      // box.position.x = (propellerLength / 2) * Math.cos(boxAngle);
-      // box.position.y = (propellerLength / 4) * Math.sin(boxAngle);
+    
+      box.rotation.x = 0.6 * Math.PI;
+      box.scale.set(2, 1.4, 1.4);
       propellerGroup.add(box);
-
-      // プロペラグループの配置
+    
       propellerGroup.rotation.z = angle;
-      propellerGroup.position.x = radius * Math.cos(angle);
-      propellerGroup.position.y = radius * Math.sin(angle);
-
-      propellerGroup.position.z = .75;
-
+      propellerGroup.position.set(radius * Math.cos(angle), radius * Math.sin(angle), .75);
+    
       this.wing.add(propellerGroup);
     }
-
+    
     const propellerneck = new THREE.Mesh(
-      new THREE.CylinderGeometry( .3, .3, .3, 32 ),
+      new THREE.CylinderGeometry(.3, .3, .3, 32),
       new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
-    propellerneck.rotation.x = 0.5*Math.PI;
+    propellerneck.rotation.x = 0.5 * Math.PI;
     propellerneck.position.z = .75;
-
     this.wing.add(propellerneck);
 
-
     const propellerneck2 = new THREE.Mesh(
-      new THREE.CylinderGeometry( .1, .1, .5, 32 ),
+      new THREE.CylinderGeometry(.1, .1, .5, 32),
       new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
-    propellerneck2.rotation.x = 0.5*Math.PI;
-    // propellerneck2.position.z = -.2;
+    propellerneck2.rotation.x = 0.5 * Math.PI;
     propellerneck2.position.z = .4;
-
     this.wing.add(propellerneck2);
 
-    
     const propellerneck3 = new THREE.Mesh(
-      new THREE.CylinderGeometry( .5, .5, 1.2, 32 ),
+      new THREE.CylinderGeometry(.5, .5, 1.2, 32),
       new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
-    propellerneck3.rotation.x = 0.5*Math.PI;
+    propellerneck3.rotation.x = 0.5 * Math.PI;
     propellerneck3.position.z = -.3;
-
     this.wing.add(propellerneck3);
 
-
-    const numLines = 70; // プロペラの数
+    const numLines = 70;
 
     for (let i = 0; i < numLines; i++) {
       const angle = (i / numLines) * 2 * Math.PI;
-
-      // プロペラグループの作成
       const coverLineGroup = new THREE.Group();
-      const coverline  = new THREE.Mesh(
-        // new THREE.CylinderGeometry( 0.001, .02, 4, 32 ),
+      const coverline = new THREE.Mesh(
         new THREE.TorusGeometry(1.9, 0.01, 12, 48),
         new THREE.MeshPhongMaterial({ color: 0xffffff })
       );
-      coverline.rotation.x = 0.5*Math.PI;
-
+      coverline.rotation.x = 0.5 * Math.PI;
       coverLineGroup.add(coverline);
-
-      // プロペラグループの配置
       coverLineGroup.rotation.z = angle;
       coverLineGroup.scale.z = 0.3;
       coverLineGroup.position.z = 0.8;
-      // coverLineGroup.rotation.x = angle;
-      // coverLineGroup.position.x = radius * Math.cos(angle);
-      // coverLineGroup.position.y = radius * Math.sin(angle);
-
       this.neck.add(coverLineGroup);
     }
 
     const cover = new THREE.Mesh(
-      // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
-      new THREE.TorusGeometry( 1.9, .05, 16, 20 ),
+      new THREE.TorusGeometry(1.9, .05, 16, 20),
       new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
-
     cover.position.z = 0.8;
     this.neck.add(cover);
 
-
     const covercenter = new THREE.Mesh(
-      // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
-      new THREE.CylinderGeometry( .5, .5, .1,16 ),
+      new THREE.CylinderGeometry(.5, .5, .1, 16),
       new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
-
-    covercenter.rotation.x = 0.5*Math.PI;
+    covercenter.rotation.x = 0.5 * Math.PI;
     covercenter.position.z = 1.4;
     this.neck.add(covercenter);
 
-
     const pool = new THREE.Mesh(
-      // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
-      new THREE.CylinderGeometry( .1, .1, 4, 32 ),  
+      new THREE.CylinderGeometry(.1, .1, 4, 32),
       new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
     pool.position.y = -2;
     this.pools.add(pool);
 
     const pool2 = new THREE.Mesh(
-      // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
-      new THREE.CylinderGeometry( .13, .23, 3, 32 ),  
+      new THREE.CylinderGeometry(.13, .23, 3, 32),
       new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
     pool2.position.y = -3;
     this.pools.add(pool2);
 
     const pool3 = new THREE.Mesh(
-      // new THREE.BoxGeometry(dotSize, dotSize, dotSize),
-      new THREE.BoxGeometry( 3, .3, 3),  
+      new THREE.BoxGeometry(3, .3, 3),
       new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
     pool3.position.y = -4.5;
@@ -266,31 +211,34 @@ class ThreeApp {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
+    // Set layers for senpuki
+    this.senpuki.traverse((object) => {
+      object.layers.set(1);
+    });
 
-
-
-    // コンポーザーの設定 @@@
-    // 1. コンポーザーにレンダラを渡して初期化する
+    // Set up composer for senpuki layer
     this.composer = new EffectComposer(this.renderer);
-    // 2. コンポーザーに、まず最初に「レンダーパス」を設定する
-    this.renderPass = new RenderPass(this.scene, this.camera);
-    this.composer.addPass(this.renderPass);
-    // 3. コンポーザーに第２のパスとして「グリッチパス」を設定する
-    // this.glitchPass = new GlitchPass();
-    // this.composer.addPass(this.glitchPass);
-    // 4. コンポーザーに第３のパスとして「ドットスクリーンパス」を設定する
-    this.dotScreenPass = new DotScreenPass();
-    this.composer.addPass(this.dotScreenPass);
-    // 5. パスの追加がすべて終わったら画面に描画結果を出すよう指示する
-    this.dotScreenPass.renderToScreen = true;
+    const renderPass = new RenderPass(this.scene, this.camera);
+    renderPass.clear = true;
+    this.composer.addPass(renderPass);
+
+    const senpukiPass = new RenderPass(this.scene, this.camera);
+    senpukiPass.clear = false;
+    senpukiPass.camera.layers.set(1);
+    this.composer.addPass(senpukiPass);
+
+    const dotScreenPass = new DotScreenPass();
+    dotScreenPass.uniforms['scale'].value = 100; // ドットの大きさを調整
+    this.composer.addPass(dotScreenPass);
 
 
-
-
-
-
-
-
+    // const filmPass = new FilmPass(
+    //   0.35, // ノイズの強さ
+    //   0.025, // スキャンラインの強さ
+    //   648, // スキャンラインの数
+    //   false // グレースケールかどうか
+    // );
+    // this.composer.addPass(filmPass);
 
 
     this.render = this.render.bind(this);
@@ -349,7 +297,6 @@ class ThreeApp {
     }
 
     this.wing.rotation.z += this.wingRotationSpeed;
-
     this.neck.rotation.y += this.neckRotationSpeed * this.neckRotationDirection;
     if (this.neck.rotation.y > Math.PI / 4) {
       this.neckRotationDirection = -1;
@@ -357,7 +304,13 @@ class ThreeApp {
       this.neckRotationDirection = 1;
     }
 
-    // this.renderer.render(this.scene, this.camera);
+    // Clear previous frames and render the scene without the effects
+    this.renderer.autoClear = true;
+    this.camera.layers.set(0);
+    this.renderer.render(this.scene, this.camera);
+
+    // Render the senpuki with effects
+    this.camera.layers.set(1);
     this.composer.render();
   }
 }
