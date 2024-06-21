@@ -19,7 +19,7 @@ class ThreeApp {
     aspect: window.innerWidth / window.innerHeight,
     near: 0.1,
     // far: 20.0,
-    position: new THREE.Vector3(0.0, 2.0, 10.0),
+    position: new THREE.Vector3(0.0, 100.0, 0.0),
     lookAt: new THREE.Vector3(0.0, 0.0, 0.0),
   };
 
@@ -304,9 +304,13 @@ class ThreeApp {
         senpukiClone.rotation.x = Math.random() * Math.PI * 2;
         senpukiClone.rotation.x = Math.random() * Math.PI * 2;
         senpukiClone.scale.set(
-          Math.random() * 3,  // x軸のスケールを0から2までのランダム値に設定
-          Math.random() * 3,  // y軸のスケールを0から2までのランダム値に設定
-          Math.random() * 3   // z軸のスケールを0から2までのランダム値に設定
+          // Math.random() * 4 - 0.8,  // x軸のスケールを0から2までのランダム値に設定
+          // Math.random() * 4 - 0.8,  // y軸のスケールを0から2までのランダム値に設定
+          // Math.random() * 4 - 0.8   // z軸のスケールを0から2までのランダム値に設定
+
+          Math.random() * 3, 
+          Math.random() * 3, 
+          Math.random() * 3  
         );
     
         this.scene.add(senpukiClone);
@@ -325,6 +329,27 @@ class ThreeApp {
     requestAnimationFrame(this.render);
 
     this.controls.update();
+
+    const zoomDuration = 4000;  // アニメーションの時間（ミリ秒）
+    const zoomTarget = new THREE.Vector3(0.0, 2.0, 10.0);  // ズーム先の位置
+  
+    // アニメーションの遅延時間（ミリ秒）
+    const zoomDelay = 2000;  // 2秒遅延
+  
+    // 現在の経過時間を取得し、遅延時間を超えている場合にアニメーションを開始
+    const currentTime = performance.now();
+    if (currentTime > zoomDelay) {
+      // 遅延後の経過時間（遅延を引いた時間）
+      const elapsedAfterDelay = currentTime - zoomDelay;
+  
+      // アニメーションの進行度合い（0から1の間の値、0が開始時、1が完了時）
+      const zoomProgress = Math.min(1, elapsedAfterDelay / zoomDuration);
+  
+      // カメラの位置を初期位置からズーム先の位置に移動する
+      this.camera.position.lerp(zoomTarget, zoomProgress);
+    }
+
+
 
     if (this.isRotating) {
       if (this.wingRotationSpeed < this.maxWingRotationSpeed) {
