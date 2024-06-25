@@ -194,6 +194,17 @@ class ThreeApp {
     covercenter.position.z = 1.4;
     this.neck.add(covercenter);
 
+
+    const neckbutton = new THREE.Mesh(
+      new THREE.CylinderGeometry(.03, .03, .5, 16),
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
+    );
+    // neckbutton.rotation.x = 0.5 * Math.PI;
+    // neckbutton.position.z = 1.4;
+    neckbutton.position.y = .4;
+    neckbutton.position.z = -.01;
+    this.neck.add(neckbutton);
+
     const pool = new THREE.Mesh(
       new THREE.CylinderGeometry(.1, .1, 4, 32),
       new THREE.MeshPhongMaterial({ color: 0xffffff })
@@ -209,11 +220,33 @@ class ThreeApp {
     this.pools.add(pool2);
 
     const pool3 = new THREE.Mesh(
-      new THREE.BoxGeometry(3, .3, 3),
+      // new THREE.BoxGeometry(3, .3, 3),
+      // new THREE.BoxGeometry(3, .2, 3),
+      new THREE.CylinderGeometry(.5, 0.7, .5, 32),
       new THREE.MeshPhongMaterial({ color: 0xffffff })
     );
-    pool3.position.y = -4.5;
+    pool3.position.y = -4.36;
     this.pools.add(pool3);
+
+    const pool4 = new THREE.Mesh(
+      // new THREE.BoxGeometry(3, .3, 3),
+      new THREE.BoxGeometry(3.1, .2, 3.1),
+      // new THREE.CylinderGeometry(1, 2, .1, 32),
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
+    );
+    pool4.position.y = -4.5;
+    this.pools.add(pool4);
+
+    const pool5 = new THREE.Mesh(
+      // new THREE.BoxGeometry(3, .3, 3),
+      // new THREE.BoxGeometry(3, .2, 3),
+      new THREE.CylinderGeometry(.05, 0.05, .3, 8),
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
+    );
+    pool5.position.y = -4.3;
+    pool5.position.z = 1;
+    pool5.position.x = 1;
+    this.pools.add(pool5);
 
     const axesBarLength = 5.0;
     this.axesHelper = new THREE.AxesHelper(axesBarLength);
@@ -297,13 +330,12 @@ class ThreeApp {
         const senpukiClone = this.senpuki.clone();
     
         // 位置を調整して配置
-        senpukiClone.position.x = (j * spacing) - gridOffset;  // x軸方向にグリッドの中心を基準に配置
+        senpukiClone.position.x = (j * spacing) - gridOffset + Math.random() * 2;  // x軸方向にグリッドの中心を基準に配置
         senpukiClone.position.z = (i * spacing) - gridOffset;  // z軸方向に5単位ずつずらす
-        // senpukiClone.position.y = (Math.random() * Math.PI * 2 - 1) * 10;  // z軸方向に5単位ずつずらす
         senpukiClone.scale.x = .1;  // x軸方向にグリッドの中心を基準に配置
         // senpukiClone.rotation.x = Math.PI.random() * 2;  // x軸方向にグリッドの中心を基準に配置
         senpukiClone.rotation.x = Math.random() * Math.PI * 2;
-        senpukiClone.rotation.y = Math.random() * Math.PI * 2;
+        senpukiClone.rotation.x = Math.random() * Math.PI * 2;
         senpukiClone.scale.set(
           Math.random() * 3,  // x軸のスケールを0から2までのランダム値に設定
           Math.random() * 3,  // y軸のスケールを0から2までのランダム値に設定
